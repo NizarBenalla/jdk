@@ -49,15 +49,18 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
+import java.util.PrimitiveIterator.OfInt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.tools.JavaFileManager.Location;
 
 public class SinceValidator {
     private final Map<String, Set<String>> LEGACY_PREVIEW_METHODS = new HashMap<>();
     private final Map<String, IntroducedIn> classDictionary = new HashMap<>();
     private final JavaCompiler tool;
+    private final Configuration configuration;
     private final List<String> wrongTagsList = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
@@ -65,48 +68,91 @@ public class SinceValidator {
             System.err.println("No module specified. Exiting...");
             System.exit(1);
         }
-        SinceValidator sinceCheckerTestHelper = new SinceValidator(args[0]);
-        sinceCheckerTestHelper.testThisModule(args[0]);
+
+        String moduleName = args[0];
+        Path home = Paths.get(System.getProperty("java.home"));
+        Path srcZip = home.resolve("lib").resolve("src.zip");
+        if (Files.notExists(srcZip)) {
+            //possibly running over an exploded JDK build, attempt to find a
+            //co-located full JDK image with src.zip:
+            Path testJdk = Paths.get(System.getProperty("test.jdk"));
+            srcZip = testJdk.getParent().resolve("images").resolve("jdk").resolve("lib").resolve("src.zip");
+        }
+        File f = new File(srcZip.toUri());
+        if (!f.exists() && !f.isDirectory()) {
+//          throw new SkippedException("Skipping Test because src.zip wasn't found");
+            throw new Exception("Skipping Test because src.zip wasn't found");
+        }
+        if (Files.isReadable(srcZip)) {
+            URI uri = URI.create("jar:" + srcZip.toUri());
+            try (FileSystem zipFO = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+                Path root = zipFO.getRootDirectories().iterator().next();
+                Path modulePath = root.resolve(moduleName);
+
+                List<String> errors = runTest(new Configuration() {
+                    @Override
+                    public IntStream versionsToCheck() {
+                        return IntStream.range(9, Runtime.version().feature() + 1);
+                    }
+
+                    @Override
+                    public String moduleName() {
+                        return moduleName;
+                    }
+
+                    @Override
+                    public List<String> optionsForAnalyzeVersion(int version) {
+                        //NOTE
+                        //Certain modules are only resolved in jdk 11 or newer, even tho they existed before
+                        //--add-module is necessary
+                        //JDK-8205169
+                        return List.of("--add-modules", moduleName, "--release", String.valueOf(version));
+                    }
+
+                    @Override
+                    public List<String> optionsForVerify() {
+                        return List.of();
+                    }
+
+                    @Override
+                    public List<Path> moduleSourcePath() {
+                        return List.of(modulePath);
+                    }
+
+                });
+                if (!errors.isEmpty()) {
+                    throw new Exception(errors.stream().collect(Collectors.joining("\n")));
+                }
+            }
+        }
     }
 
-    private SinceValidator(String moduleName) throws IOException {
+    public static List<String> runTest(Configuration configuration) throws Exception {
+        SinceValidator sinceCheckerTestHelper = new SinceValidator(configuration);
+
+        return sinceCheckerTestHelper.runVerification();
+    }
+
+    private SinceValidator(Configuration configuration) throws IOException {
         tool = ToolProvider.getSystemJavaCompiler();
-        for (int i = 9; i <= Runtime.version().feature(); i++) {
-            //NOTE
-            //Certain modules are only resolved in jdk 11 or newer, even tho they existed before
-            //--add-module is necessary
-            //JDK-8205169
-            List<String> javacOptions = getJavacOptions(moduleName, i);
+        this.configuration = configuration;
+
+        for (OfInt it = configuration.versionsToCheck().iterator(); it.hasNext(); ) {
+            int currentVersion = it.nextInt();
+            List<String> javacOptions =
+                    configuration.optionsForAnalyzeVersion(currentVersion);
             JavacTask ct = (JavacTask) tool.getTask(null, null, null,
                     javacOptions,
                     null,
                     Collections.singletonList(SimpleJavaFileObject.forSource(URI.create("myfo:/Test.java"), "")));
             ct.analyze();
 
-            String version = String.valueOf(i);
+            String version = String.valueOf(currentVersion);
             Elements elements = ct.getElements();
             elements.getModuleElement("java.base"); // forces module graph to be instantiated
             elements.getAllModuleElements().forEach(me ->
                     processModuleRecord(me, version, ct));
         }
-    }
-
-    private static List<String> getJavacOptions(String moduleName, int i) {
-        if (i > 10) {
-            return List.of("--release", String.valueOf(i));
-        }
-        // these do not appear as part of the root modules until JDK 11
-        Set<String> modules = Set.of(
-                "jdk.jcmd", "jdk.jdeps", "jdk.jfr", "jdk.jlink",
-                "java.smartcardio", "jdk.localedata", "jdk.management.jfr", "jdk.naming.dns",
-                "jdk.naming.rmi", "jdk.charsets", "jdk.crypto.cryptoki", "jdk.crypto.ec",
-                "jdk.editpad", "jdk.hotspot.agent", "jdk.zipfs"
-        );
-        if (modules.contains(moduleName)) {
-            return List.of("--add-modules", moduleName, "--release", String.valueOf(i));
-        }
-        return List.of("--release", String.valueOf(i));
-
     }
 
     private void processModuleRecord(ModuleElement moduleElement, String releaseVersion, JavacTask ct) {
@@ -175,60 +221,34 @@ public class SinceValidator {
 
     }
 
-    private void testThisModule(String moduleName) throws Exception {
-        List<Path> sources = new ArrayList<>();
-        Path home = Paths.get(System.getProperty("java.home"));
-        Path srcZip = home.resolve("lib").resolve("src.zip");
-        if (Files.notExists(srcZip)) {
-            //possibly running over an exploded JDK build, attempt to find a
-            //co-located full JDK image with src.zip:
-            Path testJdk = Paths.get(System.getProperty("test.jdk"));
-            srcZip = testJdk.getParent().resolve("images").resolve("jdk").resolve("lib").resolve("src.zip");
-        }
-        File f = new File(srcZip.toUri());
-        if (!f.exists() && !f.isDirectory()) {
-//          throw new SkippedException("Skipping Test because src.zip wasn't found");
-            throw new Exception("Skipping Test because src.zip wasn't found");
-        }
-        if (Files.isReadable(srcZip)) {
-            URI uri = URI.create("jar:" + srcZip.toUri());
-            try (FileSystem zipFO = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
-                Path root = zipFO.getRootDirectories().iterator().next();
-                Path packagePath = root.resolve(moduleName);
-                try (DirectoryStream<Path> ds = Files.newDirectoryStream(root)) {
-                    for (Path p : ds) {
-                        if (Files.isDirectory(p)) {
-                            sources.add(p);
-                        }
-                    }
-                    try (StandardJavaFileManager fm =
-                                 tool.getStandardFileManager(null, null, null)) {
-                        JavacTask ct = (JavacTask) tool.getTask(null,
-                                fm,
-                                null,
-                                List.of("--add-modules", moduleName, "-d", "."),
-                                null,
-                                Collections.singletonList(SimpleJavaFileObject.forSource(URI.create("myfo:/Test.java"), "")));
-                        ct.analyze();
-                        Elements elements = ct.getElements();
-                        elements.getModuleElement("java.base");
-                        try (EffectiveSourceSinceHelper javadocHelper = EffectiveSourceSinceHelper.create(ct, List.of(root), this)) {
-                            processModuleCheck(elements.getModuleElement(moduleName), ct, packagePath, javadocHelper);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            wrongTagsList.add("Initiating javadocHelperFailed" + e.getMessage());
-                        }
-                        if (!wrongTagsList.isEmpty()) {
-                            throw new Exception(wrongTagsList.toString());
-                        }
-                    }
+    private List<String> runVerification() throws Exception {
+        try (StandardJavaFileManager fm =
+                     tool.getStandardFileManager(null, null, null)) {
+            List<String> options = new ArrayList<>();
 
-                }
+            options.addAll(configuration.optionsForVerify());
+            options.addAll(List.of("--add-modules", configuration.moduleName(), "-d", "."));
+
+            JavacTask ct = (JavacTask) tool.getTask(null,
+                    fm,
+                    null,
+                    options,
+                    null,
+                    Collections.singletonList(SimpleJavaFileObject.forSource(URI.create("myfo:/Test.java"), "")));
+            ct.analyze();
+            Elements elements = ct.getElements();
+            elements.getModuleElement("java.base");
+            try (EffectiveSourceSinceHelper javadocHelper = EffectiveSourceSinceHelper.create(ct, configuration.moduleSourcePath(), this)) {
+                processModuleCheck(elements.getModuleElement(configuration.moduleName()), ct, javadocHelper);
+            } catch (Exception e) {
+                e.printStackTrace();
+                wrongTagsList.add("Initiating javadocHelperFailed" + e.getMessage());
             }
+            return wrongTagsList;
         }
     }
 
-    private void processModuleCheck(ModuleElement moduleElement, JavacTask ct, Path packagePath, EffectiveSourceSinceHelper javadocHelper) {
+    private void processModuleCheck(ModuleElement moduleElement, JavacTask ct, EffectiveSourceSinceHelper javadocHelper) {
         if (moduleElement == null) {
             throw new RuntimeException("Module element was null here");
         }
@@ -236,28 +256,31 @@ public class SinceValidator {
             if (ed.getTargetModules() == null) {
                 analyzePackageCheck(ed.getPackage(), ct, javadocHelper);
             } else {
-                checkModuleVersion(moduleElement, packagePath);
+                checkModuleVersion(moduleElement);
             }
         }
     }
 
-    private void checkModuleVersion(ModuleElement moduleElement, Path packagePath) {
-        Path moduleInfoFile = packagePath.resolve("module-info.java");
-        if (Files.exists(moduleInfoFile)) {
-            try {
-                byte[] ModuleInfoAsBytes = Files.readAllBytes(moduleInfoFile);
-                String ModuleInfoContent = new String(ModuleInfoAsBytes, StandardCharsets.UTF_8);
-                String moduleVersion = extractSinceVersionFromText(ModuleInfoContent).toString();
-                String moduleName = moduleElement.getQualifiedName().toString();
-                String introducedVersion = classDictionary.get(moduleName).introducedStable;
-                if (!moduleVersion.equals(introducedVersion)) {
-                    wrongTagsList.add("For  Module: " + moduleName
-                            + " Wrong since version " + moduleVersion + " instead of " + introducedVersion + "\n");
+    private void checkModuleVersion(ModuleElement moduleElement) {
+        for (Path modulePathElement : configuration.moduleSourcePath()) {
+            Path moduleInfoFile = modulePathElement.resolve(moduleElement.getQualifiedName().toString())
+                                                   .resolve("module-info.java");
+            if (Files.exists(moduleInfoFile)) {
+                try {
+                    byte[] ModuleInfoAsBytes = Files.readAllBytes(moduleInfoFile);
+                    String ModuleInfoContent = new String(ModuleInfoAsBytes, StandardCharsets.UTF_8);
+                    String moduleVersion = extractSinceVersionFromText(ModuleInfoContent).toString();
+                    String moduleName = moduleElement.getQualifiedName().toString();
+                    String introducedVersion = classDictionary.get(moduleName).introducedStable;
+                    if (!moduleVersion.equals(introducedVersion)) {
+                        wrongTagsList.add("For  Module: " + moduleName
+                                + " Wrong since version " + moduleVersion + " instead of " + introducedVersion);
+                    }
+                } catch (IOException e) {
+                    wrongTagsList.add("module-info.java not found or couldn't be opened AND this module has no unqualified exports");
                 }
-            } catch (IOException e) {
-                wrongTagsList.add("module-info.java not found or couldn't be opened AND this module has no unqualified exports\n");
-            }
 
+            }
         }
     }
 
@@ -277,7 +300,7 @@ public class SinceValidator {
                 String packageContent = new String(packageAsBytes, StandardCharsets.UTF_8);
                 packageTopVersion = extractSinceVersionFromText(packageContent);
             } catch (IOException e) {
-                wrongTagsList.add("package-info.java not found or couldn't be opened\n");
+                wrongTagsList.add("package-info.java not found or couldn't be opened");
             }
         }
         return packageTopVersion;
@@ -330,7 +353,7 @@ public class SinceValidator {
                     mappedVersion.introducedPreview :
                     mappedVersion.introducedStable;
         } catch (Exception e) {
-            wrongTagsList.add("For element " + element + "mappedVersion" + mappedVersion + " is null" + e + "\n");
+            wrongTagsList.add("For element " + element + "mappedVersion" + mappedVersion + " is null" + e);
         }
         checkEquals(sinceVersion, realMappedVersion, uniqueId);
     }
@@ -348,7 +371,7 @@ public class SinceValidator {
                 }
                 return Version.parse(versionString);
             } catch (NumberFormatException ex) {
-                wrongTagsList.add("@since value that cannot be parsed: " + versionString + "\n");
+                wrongTagsList.add("@since value that cannot be parsed: " + versionString);
                 return null;
             }
         } else {
@@ -377,10 +400,10 @@ public class SinceValidator {
         String message;
         if (mappedVersion.toString().equals("9")) {
             message = "For Element: " + elementSimpleName +
-                    " Wrong @since version " + sinceVersion + " But the element exists before JDK 10\n";
+                    " Wrong @since version " + sinceVersion + " But the element exists before JDK 10";
         } else{
             message = "For Element: " + elementSimpleName +
-                    " Wrong @since version is " + sinceVersion + " instead of " + mappedVersion + "\n";
+                    " Wrong @since version is " + sinceVersion + " instead of " + mappedVersion;
         }
         return message;
     }
@@ -591,7 +614,7 @@ public class SinceValidator {
 
                     since = signature2Source.get(handle);
                 } catch (IOException ex) {
-                    wrongTagsList.add("JavadocHelper failed for " + element + "\n");
+                    wrongTagsList.add("JavadocHelper failed for " + element);
                 }
             }
 
@@ -782,5 +805,13 @@ public class SinceValidator {
 
             };
         }
+    }
+
+    interface Configuration {
+        public IntStream versionsToCheck();
+        public String moduleName();
+        public List<String> optionsForAnalyzeVersion(int version);
+        public List<String> optionsForVerify();
+        public List<Path> moduleSourcePath();
     }
 }
