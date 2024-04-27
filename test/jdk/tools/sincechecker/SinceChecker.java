@@ -31,6 +31,3 @@
  * @library /test/jdk/tools/lib/tests
  * @run main SinceValidator java.base
  */
-
-public class SinceChecker {
-}
