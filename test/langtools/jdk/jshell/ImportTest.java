@@ -76,12 +76,11 @@ public class ImportTest extends KullaTesting {
         assertEval("abs(cos(PI / 2)) < 0.00001;", "true");
     }
 
-    @Test(enabled = false) // TODO 8129418
     public void testUnknownPackage() {
         assertDeclareFail("import unknown.qqq;",
                 new ExpectedDiagnostic("compiler.err.doesnt.exist", 7, 18, 14, -1, -1, Diagnostic.Kind.ERROR));
         assertDeclareFail("import unknown.*;",
-                new ExpectedDiagnostic("compiler.err.doesnt.exist", 7, 15, 7, -1, -1, Diagnostic.Kind.ERROR));
+                new ExpectedDiagnostic("compiler.err.doesnt.exist", 7, 7, 7, -1, -1, Diagnostic.Kind.ERROR));
     }
 
     public void testBogusImportIgnoredInFuture() {
