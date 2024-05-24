@@ -28,7 +28,7 @@
  *   Java virtual machine and other components in the Java runtime.
  *   It allows both local and remote
  *   monitoring and management of the running Java virtual machine.
- *   
+ *
  *   <h2><a id="MXBean">Platform MXBean</a></h2>
  *   <p>
  *   A platform MXBean is a <i>managed bean</i> that
@@ -158,10 +158,10 @@
  *   </pre>
  *   </li>
  *   </ul>
- *   
- *   
+ *
+ *
  *   <h2><a id="extension">Platform Extension</a></h2>
- *   
+ *
  *   <p>A Java virtual machine implementation may add its platform extension to
  *   the management interface by defining platform-dependent
  *   interfaces that extend the standard management interfaces to include
@@ -193,46 +193,46 @@
  *      for (com.sun.management.GarbageCollectorMXBean gc : mxbeans) {
  *          // Get the standard attribute "CollectionCount"
  *          String count = mxbean.getCollectionCount();
- *   
+ *
  *          // Get the platform-specific attribute "LastGcInfo"
  *          GcInfo gcinfo = gc.getLastGcInfo();
  *          ...
  *      }
  *   </pre>
  *   </blockquote>
- *   
+ *
  *   <p>
  *   2) Access the Oracle-specific MXBean interface via <code>MBeanServer</code>
  *      through proxy
- *   
+ *
  *   <blockquote><pre>
  *      MBeanServerConnection mbs;
- *   
+ *
  *      // Connect to a running JVM (or itself) and get MBeanServerConnection
  *      // that has the JVM MXBeans registered in it
  *      ...
- *   
+ *
  *      List&lt;com.sun.management.GarbageCollectorMXBean&gt; mxbeans =
  *          ManagementFactory.getPlatformMXBeans(mbs, com.sun.management.GarbageCollectorMXBean.class);
- *   
+ *
  *      for (com.sun.management.GarbageCollectorMXBean gc : mxbeans) {
  *          // Get the standard attribute "CollectionCount"
  *          String count = mxbean.getCollectionCount();
- *   
+ *
  *          // Get the platform-specific attribute "LastGcInfo"
  *          GcInfo gcinfo = gc.getLastGcInfo();
  *          ...
  *      }
  *   </pre></blockquote>
- *   
+ *
  *   <p> Unless otherwise noted, passing a <code>null</code> argument to a constructor
  *   or method in any class or interface in this package will cause a {@link
  *   java.lang.NullPointerException NullPointerException} to be thrown.
- *   
+ *
  *   <p> The java.lang.management API is thread-safe.
- *   
+ *
  *   @see javax.management JMX Specification
- *   
+ *
  *   @author  Mandy Chung
  *   @since   1.5
  */
