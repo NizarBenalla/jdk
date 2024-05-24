@@ -38,12 +38,12 @@
  *   with a unique
  *   {@linkplain java.lang.management.PlatformManagedObject#getObjectName name}.
  *   <h2>ManagementFactory</h2>
- *   
+ *
  *   <p>The {@link java.lang.management.ManagementFactory} class is the management
  *   factory class for the Java platform.  This class provides a set of
  *   static factory methods to obtain the MXBeans for the Java platform
  *   to allow an application to access the MXBeans directly.
- *   
+ *
  *   <p>A <em>platform MBeanServer</em> can be accessed with the
  *   {@link java.lang.management.ManagementFactory#getPlatformMBeanServer
  *    getPlatformMBeanServer} method.  On the first call to this method,
@@ -54,9 +54,9 @@
  *   the specification of the management interface.
  *   This is a single MBeanServer that can be shared by different managed
  *   components running within the same Java virtual machine.
- *   
+ *
  *   <h2>Interoperability</h2>
- *   
+ *
  *   <p>A management application and a platform MBeanServer of a running
  *   virtual machine can interoperate
  *   without requiring classes used by the platform MXBean interfaces.
@@ -68,9 +68,9 @@
  *   open type when being accessed via MBeanServer interface.
  *   See the <a href="{@docRoot}/java.management/javax/management/MXBean.html#MXBean-spec">
  *   MXBean</a> specification for details.
- *   
+ *
  *   <h2><a id="examples">Ways to Access MXBeans</a></h2>
- *   
+ *
  *   <p>An application can monitor the instrumentation of the
  *   Java virtual machine and the runtime in the following ways:
  *   <p>
@@ -79,7 +79,7 @@
  *   <li>Get an MXBean instance locally in the running Java virtual machine:
  *   <pre>
  *      RuntimeMXBean mxbean = ManagementFactory.getRuntimeMXBean();
- *   
+ *
  *      // Get the standard attribute "VmVendor"
  *      String vendor = mxbean.getVmVendor();
  *   </pre>
@@ -90,7 +90,7 @@
  *                  getPlatformMXBeans} method:
  *   <pre>
  *      RuntimeMXBean mxbean = ManagementFactory.getPlatformMXBean(RuntimeMXBean.class);
- *   
+ *
  *      // Get the standard attribute "VmVendor"
  *      String vendor = mxbean.getVmVendor();
  *   </pre>
@@ -99,11 +99,11 @@
  *       method calls to a given MBeanServer:
  *   <pre>
  *      MBeanServerConnection mbs;
- *   
+ *
  *      // Connect to a running JVM (or itself) and get MBeanServerConnection
  *      // that has the JVM MBeans registered in it
  *      ...
- *   
+ *
  *      // Get a MBean proxy for RuntimeMXBean interface
  *      RuntimeMXBean proxy =
  *          {@link java.lang.management.ManagementFactory#getPlatformMXBean(MBeanServerConnection, Class)
@@ -139,15 +139,15 @@
  *       defined in {@link javax.management.openmbean.OpenType OpenType}.
  *   <pre>
  *      MBeanServerConnection mbs;
- *   
+ *
  *      // Connect to a running JVM (or itself) and get MBeanServerConnection
  *      // that has the JVM MXBeans registered in it
  *      ...
- *   
+ *
  *      try {
  *          // Assuming the RuntimeMXBean has been registered in mbs
  *          ObjectName oname = new ObjectName(ManagementFactory.RUNTIME_MXBEAN_NAME);
- *   
+ *
  *          // Get standard attribute "VmVendor"
  *          String vendor = (String) mbs.getAttribute(oname, "VmVendor");
  *      } catch (....) {
@@ -168,7 +168,7 @@
  *   platform-specific metrics and management operations.
  *   The static factory methods in the <code>ManagementFactory</code> class will
  *   return the MXBeans with the platform extension.
- *   
+ *
  *   <p>
  *   It is recommended to name the platform-specific attributes with
  *   a vendor-specific prefix such as the vendor's name to
@@ -179,17 +179,17 @@
  *   is happened to be same as some vendor-specific attribute's name,
  *   the applications accessing that vendor-specific attribute would have
  *   to be modified to cope with versioning and compatibility issues.
- *   
+ *
  *   <p>Below is an example showing how to access an attribute
  *   from the platform extension:
- *   
+ *
  *   <p>
  *   1) Direct access to the Oracle-specific MXBean interface
  *   <blockquote>
  *   <pre>
  *      List&lt;com.sun.management.GarbageCollectorMXBean&gt; mxbeans =
  *          ManagementFactory.getPlatformMXBeans(com.sun.management.GarbageCollectorMXBean.class);
- *   
+ *
  *      for (com.sun.management.GarbageCollectorMXBean gc : mxbeans) {
  *          // Get the standard attribute "CollectionCount"
  *          String count = mxbean.getCollectionCount();
