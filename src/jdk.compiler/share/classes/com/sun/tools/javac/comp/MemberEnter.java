@@ -167,6 +167,7 @@ public class MemberEnter extends JCTree.Visitor {
         Env<AttrContext> prevEnv = this.env;
         try {
             this.env = env;
+//           tree.vartype.pos()= tree.pos();
             tree.accept(this);
         }  catch (CompletionFailure ex) {
             chk.completionError(tree.pos(), ex);
@@ -269,6 +270,7 @@ public class MemberEnter extends JCTree.Visitor {
             if (TreeInfo.isEnumInit(tree)) {
                 attr.attribIdentAsEnumType(localEnv, (JCIdent)tree.vartype);
             } else if (!tree.isImplicitlyTyped()) {
+                tree.vartype.pos= tree.getStartPosition();
                 attr.attribType(tree.vartype, localEnv);
                 if (TreeInfo.isReceiverParam(tree))
                     checkReceiver(tree, localEnv);
