@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import toolbox.TestRunner;
+import tester.DocTester;
 
 /**
  * Takes a directory path under the generated documentation directory as input
@@ -57,11 +58,8 @@ public class DocCheck extends TestRunner {
     }
 
     public void init() {
-        Path root = ROOT_PATH.getParent()
-                .resolve("docs")
-                .resolve(DIR);
         var fileTester = new FileProcessor();
-        fileTester.processFiles(root);
+        fileTester.processFiles(DocTester.resolveDocs());
         files = fileTester.getFiles();
     }
 
