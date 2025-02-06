@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -33,47 +33,8 @@ import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
-import com.sun.source.doctree.AttributeTree;
+import com.sun.source.doctree.*;
 import com.sun.source.doctree.AttributeTree.ValueKind;
-import com.sun.source.doctree.AuthorTree;
-import com.sun.source.doctree.CommentTree;
-import com.sun.source.doctree.DeprecatedTree;
-import com.sun.source.doctree.DocCommentTree;
-import com.sun.source.doctree.DocRootTree;
-import com.sun.source.doctree.DocTree;
-import com.sun.source.doctree.DocTypeTree;
-import com.sun.source.doctree.EndElementTree;
-import com.sun.source.doctree.EntityTree;
-import com.sun.source.doctree.ErroneousTree;
-import com.sun.source.doctree.EscapeTree;
-import com.sun.source.doctree.HiddenTree;
-import com.sun.source.doctree.IdentifierTree;
-import com.sun.source.doctree.IndexTree;
-import com.sun.source.doctree.InheritDocTree;
-import com.sun.source.doctree.LinkTree;
-import com.sun.source.doctree.LiteralTree;
-import com.sun.source.doctree.RawTextTree;
-import com.sun.source.doctree.ParamTree;
-import com.sun.source.doctree.ProvidesTree;
-import com.sun.source.doctree.ReferenceTree;
-import com.sun.source.doctree.ReturnTree;
-import com.sun.source.doctree.SeeTree;
-import com.sun.source.doctree.SerialDataTree;
-import com.sun.source.doctree.SerialFieldTree;
-import com.sun.source.doctree.SerialTree;
-import com.sun.source.doctree.SinceTree;
-import com.sun.source.doctree.SnippetTree;
-import com.sun.source.doctree.SpecTree;
-import com.sun.source.doctree.StartElementTree;
-import com.sun.source.doctree.SummaryTree;
-import com.sun.source.doctree.SystemPropertyTree;
-import com.sun.source.doctree.TextTree;
-import com.sun.source.doctree.ThrowsTree;
-import com.sun.source.doctree.UnknownBlockTagTree;
-import com.sun.source.doctree.UnknownInlineTagTree;
-import com.sun.source.doctree.UsesTree;
-import com.sun.source.doctree.ValueTree;
-import com.sun.source.doctree.VersionTree;
 
 /**
  * Factory for creating {@code DocTree} nodes.
@@ -386,6 +347,12 @@ public interface DocTreeFactory {
      * @since 18
      */
     SnippetTree newSnippetTree(List<? extends DocTree> attributes, TextTree text);
+
+
+    /**
+     * Placeholder
+     */
+    SupersededTree newSupersededTree(List<? extends DocTree> attributes);
 
     /**
      * Creates a new {@code SpecTree} object, to represent an {@code @spec} tag.

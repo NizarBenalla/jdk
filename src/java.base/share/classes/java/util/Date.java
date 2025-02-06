@@ -117,6 +117,9 @@ import sun.util.calendar.ZoneInfo;
  * not fall within the indicated ranges; for example, a date may be
  * specified as January 32 and is interpreted as meaning February 1.
  *
+ * @superseded This class has been largely replaced by {@link java.time.Instant} and other
+ * classes in the {@link java.time} package, which provides a more robust date-time API.
+ *
  * @author  James Gosling
  * @author  Arthur van Hoff
  * @author  Alan Liu
@@ -157,6 +160,9 @@ public class Date
      * it represents the time at which it was allocated, measured to the
      * nearest millisecond.
      *
+     * @superseded The preferred way to obtain the current instant is by using {@link java.time.Instant#now()},
+     *  which is part of the modern {@link java.time} API.
+     *
      * @see     java.lang.System#currentTimeMillis()
      */
     public Date() {
@@ -168,6 +174,9 @@ public class Date
      * represent the specified number of milliseconds since the
      * standard base time known as "the epoch", namely January 1,
      * 1970, 00:00:00 GMT.
+     *
+     * @superseded Instead of using this constructor, consider {@link java.time.Instant#ofEpochMilli(long)},
+     * which provides better support for modern date-time operations.
      *
      * @param   date   the milliseconds since January 1, 1970, 00:00:00 GMT.
      * @see     java.lang.System#currentTimeMillis()

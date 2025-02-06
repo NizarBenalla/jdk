@@ -169,11 +169,30 @@ public class ClassWriter extends SubWriterHolderWriter {
         c.add(HtmlTree.HR());
         var div = HtmlTree.DIV(HtmlStyles.horizontalScroll);
         buildClassSignature(div);
+        buildSupersededInfo(c);
         buildDeprecationInfo(div);
         buildClassDescription(div);
         buildClassTagInfo(div);
         c.add(div);
         target.add(getClassInfo(c));
+    }
+
+    /**
+     * Placeholder
+     */
+
+    protected void buildSupersededInfo(ContentBuilder target) {
+        addSupersededInfo(target);
+    }
+
+    private void addSupersededInfo(ContentBuilder target) {
+        if (utils.hasBlockTag(typeElement, DocTree.Kind.SUPERSEDED)) {
+            var t = configuration.tagletManager.getTaglet(DocTree.Kind.SUPERSEDED);
+            Content paramInfo = t.getAllBlockTagOutput(typeElement, getTagletWriterInstance(false));
+            if (!paramInfo.isEmpty()) {
+                target.add(HtmlTree.DL(HtmlStyles.notes, paramInfo));
+            }
+        }
     }
 
     /**

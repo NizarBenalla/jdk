@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -37,14 +37,9 @@ import javax.lang.model.element.Name;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
+import com.sun.source.doctree.*;
 import com.sun.source.doctree.AttributeTree.ValueKind;
-import com.sun.source.doctree.DocTree;
 import com.sun.source.doctree.DocTree.Kind;
-import com.sun.source.doctree.EndElementTree;
-import com.sun.source.doctree.IdentifierTree;
-import com.sun.source.doctree.ReferenceTree;
-import com.sun.source.doctree.StartElementTree;
-import com.sun.source.doctree.TextTree;
 import com.sun.source.util.DocTreeFactory;
 import com.sun.tools.javac.api.JavacTrees;
 import com.sun.tools.javac.parser.ParserFactory;
@@ -89,6 +84,7 @@ import com.sun.tools.javac.tree.DCTree.DCUnknownInlineTag;
 import com.sun.tools.javac.tree.DCTree.DCUses;
 import com.sun.tools.javac.tree.DCTree.DCValue;
 import com.sun.tools.javac.tree.DCTree.DCVersion;
+import com.sun.tools.javac.tree.DCTree.DCSuperseded;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.DefinedBy;
 import com.sun.tools.javac.util.DefinedBy.Api;
@@ -440,6 +436,14 @@ public class DocTreeMaker implements DocTreeFactory {
         tree.pos = pos;
         return tree;
     }
+
+    @Override @DefinedBy(Api.COMPILER_TREE)
+    public DCSuperseded newSupersededTree(List<? extends DocTree> attributes) {
+        DCSuperseded tree =  new DCSuperseded(cast(attributes));
+        tree.pos = pos;
+        return tree;
+    }
+
 
     @Override @DefinedBy(Api.COMPILER_TREE)
     public DCSnippet newSnippetTree(List<? extends DocTree> attributes, TextTree text) {

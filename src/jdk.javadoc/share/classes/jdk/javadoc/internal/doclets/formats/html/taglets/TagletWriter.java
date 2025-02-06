@@ -238,6 +238,12 @@ public class TagletWriter {
                 continue;
             }
 
+            if (utils.isTypeElement(element) && taglet instanceof SimpleTaglet && ((SimpleTaglet) taglet).getTagKind() == DocTree.Kind.SUPERSEDED) {
+                // The type parameters and state components are documented in a special
+                // section away from the tag info, so skip here.
+                continue;
+            }
+
             if (element.getKind() == ElementKind.MODULE && taglet instanceof BaseTaglet t) {
                 switch (t.getTagKind()) {
                     // @uses and @provides are handled separately, so skip here.

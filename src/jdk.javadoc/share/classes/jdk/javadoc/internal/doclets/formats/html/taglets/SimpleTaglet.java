@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2001, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -42,11 +42,9 @@ import com.sun.source.doctree.DocTree;
 
 import jdk.javadoc.doclet.Taglet;
 import jdk.javadoc.internal.doclets.formats.html.HtmlConfiguration;
+import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyles;
 import jdk.javadoc.internal.doclets.toolkit.util.DocFinder;
-import jdk.javadoc.internal.html.Content;
-import jdk.javadoc.internal.html.ContentBuilder;
-import jdk.javadoc.internal.html.HtmlTree;
-import jdk.javadoc.internal.html.RawHtml;
+import jdk.javadoc.internal.html.*;
 
 /**
  * A custom single-argument block tag.
@@ -156,6 +154,47 @@ public class SimpleTaglet extends BaseTaglet implements InheritableTaglet {
         };
     }
 
+
+    /**
+     * PlaceHolder
+     */
+    static SimpleTaglet createSupersededTaglet(HtmlConfiguration config, String header, Set<Taglet.Location> locations) {
+        return new SimpleTaglet(config, DocTree.Kind.SUPERSEDED, header, locations) {
+            @Override
+            protected Content simpleBlockTagOutput(Element element,
+                                                   List<? extends DocTree> simpleTags,
+                                                   String header) {
+                var ch = utils.getCommentHelper(element);
+                var context = tagletWriter.context;
+                var htmlWriter = tagletWriter.htmlWriter;
+
+                ContentBuilder body = new ContentBuilder();
+
+                body.add(HtmlTree.DIV(HtmlStyles.supersededIcon, Entity.INFO_ICON));
+                HtmlTree list = null;
+                if (simpleTags.size() > 1) {
+                    list = HtmlTree.UL();
+                    for (DocTree simpleTag : simpleTags) {
+                        List<? extends DocTree> bodyTags = ch.getBody(simpleTag);
+                        list.add(HtmlTree.LI()
+                                .add(htmlWriter.commentTagsToContent(element, bodyTags, context.within(simpleTag))));
+                    }
+                } else {
+                    list = HtmlTree.SPAN(htmlWriter.commentTagsToContent(element, ch.getBody(simpleTags.getFirst()), context.within(simpleTags.getFirst())));
+                }
+
+                ContentBuilder body1 = new ContentBuilder();
+                body1.add(HtmlTree.DIV(HtmlStyles.supersededLabel,
+                        config.contents.getContent("doclet.superseded")));
+                body1.add((HtmlTree.DIV(HtmlStyles.supersededList, list)));
+
+               body.add(HtmlTree.DIV(HtmlStyles.supersededText, body1));
+                return HtmlTree.DIV(HtmlStyles.supersededBlock, body);
+            }
+
+        };
+    }
+
     @Override
     public Output inherit(Element dst, Element src, DocTree tag, boolean isFirstSentence) {
         assert dst.getKind() == ElementKind.METHOD;
@@ -243,7 +282,7 @@ public class SimpleTaglet extends BaseTaglet implements InheritableTaglet {
      *
      * @return the output
      */
-    private Content simpleBlockTagOutput(Element element,
+    protected Content simpleBlockTagOutput(Element element,
                                         List<? extends DocTree> simpleTags,
                                         String header) {
         var ch = utils.getCommentHelper(element);
