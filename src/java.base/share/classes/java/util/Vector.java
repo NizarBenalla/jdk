@@ -81,6 +81,10 @@ import jdk.internal.util.ArraysSupport;
  * implementation is not needed, it is recommended to use {@link
  * ArrayList} in place of {@code Vector}.
  *
+ * @superseded If you do not need the locking policy, using an {@link java.util.ArrayList} may be preferable.
+ * @superseded Use {@link Collections#synchronizedList(List)} which gives similar locking policy to {@link java.util.Vector}
+ * @superseded Use {@link java.util.LinkedList} when you need an implementation of a stack as it outperforms {@link java.util.ArrayList}.
+ *
  * @param <E> Type of component elements
  *
  * @author  Lee Boynton
