@@ -38,6 +38,7 @@ public class Entity extends Content {
     public static final Entity NO_BREAK_SPACE = new Entity("&nbsp;");
     public static final Entity LEFT_POINTING_ANGLE = new Entity("&#10094;");
     public static final Entity RIGHT_POINTING_ANGLE = new Entity("&#10095;");
+    public static final Entity INFO_ICON = new Entity("&#9432;");
 
     public final String text;
 

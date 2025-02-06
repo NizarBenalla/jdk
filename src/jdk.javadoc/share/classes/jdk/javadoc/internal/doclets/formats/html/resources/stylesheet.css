@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
@@ -815,8 +815,8 @@ div.block {
     margin:0 10px 5px 0;
     color:var(--block-text-color);
 }
-.deprecated-label, .description-from-type-label, .implementation-label, .member-name-link,
-.package-hierarchy-label, .type-name-label, .type-name-link, .search-tag-link, .preview-label, .restricted-label {
+.deprecated-label, .description-from-type-label, .implementation-label, .member-name-link, .package-hierarchy-label,
+.type-name-label, .type-name-link, .search-tag-link, .preview-label, .restricted-label, .superseded-label {
     font-weight:bold;
 }
 sup.preview-mark,
@@ -832,7 +832,7 @@ sup.preview-mark > a:link,
 sup.restricted-mark > a:link {
     font-weight: normal;
 }
-.deprecation-comment, .help-footnote, .preview-comment, .restricted-comment {
+.deprecation-comment, .help-footnote, .preview-comment, .restricted-comment, .superseded-comment {
     font-style:italic;
 }
 .deprecation-block, .preview-block, .restricted-block {
@@ -846,6 +846,55 @@ sup.restricted-mark > a:link {
     margin-right:10px;
     display:inline-block;
 }
+
+.superseded-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+}
+
+.superseded-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #7373ff;
+}
+
+
+.superseded-text {
+    flex-grow: 1;
+}
+
+.superseded-label {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.superseded-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.superseded-list li {
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.superseded-list code {
+    background: #f4f4f4;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
 div.block div.deprecation-comment {
     font-style:normal;
 }

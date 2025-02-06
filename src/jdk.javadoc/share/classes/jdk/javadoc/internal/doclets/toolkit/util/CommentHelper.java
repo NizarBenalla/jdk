@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,35 +25,7 @@
 
 package jdk.javadoc.internal.doclets.toolkit.util;
 
-import com.sun.source.doctree.AuthorTree;
-import com.sun.source.doctree.BlockTagTree;
-import com.sun.source.doctree.CommentTree;
-import com.sun.source.doctree.DeprecatedTree;
-import com.sun.source.doctree.DocCommentTree;
-import com.sun.source.doctree.DocTree;
-import com.sun.source.doctree.EscapeTree;
-import com.sun.source.doctree.IdentifierTree;
-import com.sun.source.doctree.InheritDocTree;
-import com.sun.source.doctree.InlineTagTree;
-import com.sun.source.doctree.LinkTree;
-import com.sun.source.doctree.LiteralTree;
-import com.sun.source.doctree.ParamTree;
-import com.sun.source.doctree.ProvidesTree;
-import com.sun.source.doctree.RawTextTree;
-import com.sun.source.doctree.ReferenceTree;
-import com.sun.source.doctree.ReturnTree;
-import com.sun.source.doctree.SeeTree;
-import com.sun.source.doctree.SerialDataTree;
-import com.sun.source.doctree.SerialFieldTree;
-import com.sun.source.doctree.SerialTree;
-import com.sun.source.doctree.SinceTree;
-import com.sun.source.doctree.SpecTree;
-import com.sun.source.doctree.TextTree;
-import com.sun.source.doctree.ThrowsTree;
-import com.sun.source.doctree.UnknownBlockTagTree;
-import com.sun.source.doctree.UsesTree;
-import com.sun.source.doctree.ValueTree;
-import com.sun.source.doctree.VersionTree;
+import com.sun.source.doctree.*;
 import com.sun.source.util.DocTreePath;
 import com.sun.source.util.DocTrees;
 import com.sun.source.util.SimpleDocTreeVisitor;
@@ -484,6 +456,11 @@ public class CommentHelper {
             @Override
             public List<? extends DocTree> visitUses(UsesTree node, Void p) {
                 return node.getDescription();
+            }
+
+            @Override
+            public List<? extends DocTree> visitSuperseded(SupersededTree node, Void p) {
+                return node.getReference();
             }
 
             @Override

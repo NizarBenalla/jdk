@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -392,6 +392,30 @@ public enum HtmlStyles implements HtmlStyle {
      * The class for the details in a block describing the "deprecated" status of a declaration.
      */
     deprecationComment,
+
+    /**
+     * Placeholder
+     */
+    supersededLabel,
+
+    /**
+     * Placeholder
+     */
+    supersededBlock,
+    /**
+     * Placeholder
+     */
+    supersededIcon,
+
+    /**
+     * PlaceHplder
+     */
+    supersededText,
+
+    /**
+     * Placeholder
+     */
+    supersededList,
 
     /**
      * The class for a label indicating the element from which a description has been copied.

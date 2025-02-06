@@ -158,6 +158,7 @@ public class ClassWriter extends SubWriterHolderWriter {
      */
     protected void buildClassInfo(Content target) {
         var c = new ContentBuilder();
+        buildSupersededInfo(c);
         buildParamInfo(c);
         buildSuperInterfacesInfo(c);
         buildImplementedInterfacesInfo(c);
@@ -174,6 +175,24 @@ public class ClassWriter extends SubWriterHolderWriter {
         buildClassTagInfo(div);
         c.add(div);
         target.add(getClassInfo(c));
+    }
+
+    /**
+     * Placeholder
+     */
+
+    protected void buildSupersededInfo(ContentBuilder target) {
+        addSupersededInfo(target);
+    }
+
+    private void addSupersededInfo(ContentBuilder target) {
+        if (utils.hasBlockTag(typeElement, DocTree.Kind.SUPERSEDED)) {
+            var t = configuration.tagletManager.getTaglet(DocTree.Kind.SUPERSEDED);
+            Content paramInfo = t.getAllBlockTagOutput(typeElement, getTagletWriterInstance(false));
+            if (!paramInfo.isEmpty()) {
+                target.add(HtmlTree.DL(HtmlStyles.notes, paramInfo));
+            }
+        }
     }
 
     /**
