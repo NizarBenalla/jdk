@@ -540,6 +540,20 @@ public class SimpleDocTreeVisitor<R,P> implements DocTreeVisitor<R, P> {
     public R visitSummary(SummaryTree node, P p) {
         return defaultAction(node, p);
     }
+    /**
+     * {@inheritDoc}
+     *
+     * @implSpec This implementation calls {@code defaultAction}.
+     *
+     * @param node {@inheritDoc}
+     * @param p {@inheritDoc}
+     * @return  the result of {@code defaultAction}
+     * @since 10
+     */
+    @Override
+    public R visitSuperseded(SupersededTree node, P p) {
+        return defaultAction(node, p);
+    }
 
     /**
      * {@inheritDoc}

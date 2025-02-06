@@ -548,6 +548,15 @@ public class DocTreeScanner<R,P> implements DocTreeVisitor<R,P> {
         r = scanAndReduce(node.getBody(), p, r);
         return r;
     }
+    /**
+     * Placeholder
+     */
+    @Override
+    public R visitSuperseded(SupersededTree node, P p) {
+        R r = scan(node.getReference(), p);
+        r = scanAndReduce(node.getReference(), p, r);
+        return r;
+    }
 
     /**
      * {@inheritDoc}

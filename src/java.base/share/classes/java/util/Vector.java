@@ -87,6 +87,7 @@ import jdk.internal.util.ArraysSupport;
  * @author  Jonathan Payne
  * @see Collection
  * @see LinkedList
+// * @superceded {@code ArrayList}
  * @since   1.0
  */
 public class Vector<E>

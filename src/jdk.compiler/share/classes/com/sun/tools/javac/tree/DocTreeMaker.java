@@ -37,14 +37,9 @@ import javax.lang.model.element.Name;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
+import com.sun.source.doctree.*;
 import com.sun.source.doctree.AttributeTree.ValueKind;
-import com.sun.source.doctree.DocTree;
 import com.sun.source.doctree.DocTree.Kind;
-import com.sun.source.doctree.EndElementTree;
-import com.sun.source.doctree.IdentifierTree;
-import com.sun.source.doctree.ReferenceTree;
-import com.sun.source.doctree.StartElementTree;
-import com.sun.source.doctree.TextTree;
 import com.sun.source.util.DocTreeFactory;
 import com.sun.tools.javac.api.JavacTrees;
 import com.sun.tools.javac.parser.ParserFactory;
@@ -440,6 +435,14 @@ public class DocTreeMaker implements DocTreeFactory {
         tree.pos = pos;
         return tree;
     }
+
+    @Override @DefinedBy(Api.COMPILER_TREE)
+    public SupersededTree newSupersededTree(List<? extends DocTree> attributes, TextTree text) {
+        DCTree.DCSuperseded tree =  new DCTree.DCSuperseded(cast(attributes), text);
+        tree.pos = pos;
+        return tree;
+    }
+
 
     @Override @DefinedBy(Api.COMPILER_TREE)
     public DCSnippet newSnippetTree(List<? extends DocTree> attributes, TextTree text) {

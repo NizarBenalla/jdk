@@ -1027,6 +1027,32 @@ public abstract class DCTree implements DocTree {
         }
     }
 
+    public static class DCSuperseded extends DCBlockTag implements SupersededTree {
+        public final List<DCTree> reference;
+        public final TextTree text;
+
+        public DCSuperseded(List<DCTree> reference, TextTree text) {
+            this.reference = reference;
+            this.text = text;
+        }
+
+
+        @Override @DefinedBy(Api.COMPILER_TREE)
+        public Kind getKind() {
+            return Kind.SUPERSEDED;
+        }
+
+        @Override @DefinedBy(Api.COMPILER_TREE)
+        public <R, D> R accept(DocTreeVisitor<R, D> v, D d) {
+            return v.visitSuperseded(this, d);
+        }
+
+        @Override @DefinedBy(Api.COMPILER_TREE)
+        public List<? extends DocTree> getReference() {
+            return reference;
+        }
+    }
+
     public static class DCSerial extends DCBlockTag implements SerialTree {
         public final List<DCTree> description;
 

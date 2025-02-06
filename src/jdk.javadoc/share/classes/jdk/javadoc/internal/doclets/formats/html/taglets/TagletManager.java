@@ -625,6 +625,7 @@ public class TagletManager {
         addStandardTaglet(new IndexTaglet(config));
         addStandardTaglet(new SummaryTaglet(config));
         addStandardTaglet(new SystemPropertyTaglet(config));
+        addStandardTaglet(new SupersededTaglet(config));
 
         // Keep track of the names of standard tags for error checking purposes.
         // The following are not handled above.

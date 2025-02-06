@@ -92,21 +92,8 @@ import javax.tools.JavaFileManager;
 import javax.tools.JavaFileManager.Location;
 import javax.tools.StandardLocation;
 
-import com.sun.source.doctree.BlockTagTree;
-import com.sun.source.doctree.DeprecatedTree;
-import com.sun.source.doctree.DocCommentTree;
-import com.sun.source.doctree.DocTree;
+import com.sun.source.doctree.*;
 import com.sun.source.doctree.DocTree.Kind;
-import com.sun.source.doctree.ParamTree;
-import com.sun.source.doctree.ProvidesTree;
-import com.sun.source.doctree.ReturnTree;
-import com.sun.source.doctree.SeeTree;
-import com.sun.source.doctree.SerialDataTree;
-import com.sun.source.doctree.SerialFieldTree;
-import com.sun.source.doctree.SerialTree;
-import com.sun.source.doctree.SpecTree;
-import com.sun.source.doctree.ThrowsTree;
-import com.sun.source.doctree.UsesTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.LineMap;
 import com.sun.source.util.DocSourcePositions;
@@ -2359,6 +2346,10 @@ public class Utils {
 
     public List<? extends UsesTree> getUsesTrees(Element element) {
         return getBlockTags(element, USES, UsesTree.class);
+    }
+
+    public List<? extends SupersededTree> getSupersededTrees(Element element) {
+        return getBlockTags(element, SUPERSEDED, SupersededTree.class);
     }
 
     public List<? extends DocTree> getFirstSentenceTrees(Element element) {

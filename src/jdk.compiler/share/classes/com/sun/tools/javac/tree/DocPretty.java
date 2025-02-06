@@ -538,6 +538,18 @@ public class DocPretty implements DocTreeVisitor<Void,Void> {
         }
         return null;
     }
+    //todo update this
+    @Override @DefinedBy(Api.COMPILER_TREE)
+   public Void visitSuperseded(SupersededTree node, Void p) {
+        try {
+            printTagName(node);
+            print(' ');
+            print(node.getReference());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return null;
+    }
 
     @Override @DefinedBy(Api.COMPILER_TREE)
     public Void visitStartElement(StartElementTree node, Void p) {

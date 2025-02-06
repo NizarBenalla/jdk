@@ -264,6 +264,15 @@ public interface DocTree {
          */
         SUMMARY("summary"),
 
+
+        /**
+         * Placeholder text
+         *
+         * @since 25
+         */
+        SUPERSEDED("superseded"),
+
+
         /**
          * Used for instances of {@link TextTree}
          * representing some plain documentation text.

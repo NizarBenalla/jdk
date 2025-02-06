@@ -372,6 +372,12 @@ public interface DocTreeVisitor<R,P> {
     default R visitSummary(SummaryTree node, P p) {
         return visitOther(node, p);
     }
+    /**
+     * Placeholder
+     */
+    default R visitSuperseded(SupersededTree node, P p) {
+        return visitOther(node, p);
+    }
 
     /**
      * Visits a {@code SystemPropertyTree} node.

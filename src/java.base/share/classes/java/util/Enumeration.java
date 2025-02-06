@@ -60,6 +60,8 @@ package java.util;
  * @see     java.util.Vector
  * @see     java.util.Vector#elements()
  *
+ * @superseded kkkkkkkk
+ *
  * @author  Lee Boynton
  * @since   1.0
  */
